@@ -1,0 +1,8 @@
+# Makefiles
+
+*.make
+Makefile
+
+# Binaries
+
+bin/
