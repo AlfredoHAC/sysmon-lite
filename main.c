@@ -1,6 +1,4 @@
-#include "Core/sysmon.h"
-#include <ncurses.h>
-#include <stdbool.h>
+#include "src/sysmon.h"
 
 int main(int argc, char *argv[]) {
   sysmonInit();

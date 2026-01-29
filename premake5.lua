@@ -11,11 +11,13 @@ project "Sysmon-Lite"
     links { "ncurses" }
 
     files {
-        "**.c"
+        "**.c",
+        "src/**.c"
     }
 
     includedirs {
-        "**.h"
+        "**.h",
+        "src/**.h"
     }
 
     symbols "On"
