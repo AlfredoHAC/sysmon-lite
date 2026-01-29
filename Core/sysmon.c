@@ -51,7 +51,7 @@ void sysmonRun()
 {
     int key = 0;
     int width, height;
-    const char* welcome_str = "Welcome to Sysmon-Lite! (Pressione Q para sair)\n";
+    const char* welcome_str = "Welcome to Sysmon-Lite! (Press Q to quit)\n";
 
     FILE* proc_file = NULL;
 
