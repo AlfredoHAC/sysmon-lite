@@ -1,6 +1,6 @@
 #include "src/sysmon.h"
 
-int main(int argc, char *argv[]) {
+int main(void) {
   sysmonInit();
 
   sysmonRun();

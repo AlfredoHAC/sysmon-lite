@@ -1,8 +1,12 @@
-# Makefiles
-
-*.make
-Makefile
+# CMake
+build/
+cmake-build-*/
 
 # Binaries
-
 bin/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

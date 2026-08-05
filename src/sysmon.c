@@ -13,10 +13,11 @@
 #include <unistd.h>
 
 static volatile sig_atomic_t running = false;
-static int cpu_core_count = 0;
+static int cpu_core_count = 1;
 
-static void signalHandler(int signal)
+static void signalHandler(int signum)
 {
+    (void)signum;
     sysmonStop();
 }
 
@@ -38,10 +39,15 @@ bool sysmonInit()
 
     keypad(stdscr, true);
     curs_set(0);
-    timeout(400);
+    nodelay(stdscr, true);
 
     signal(SIGINT, signalHandler);
-    cpu_core_count = sysconf(_SC_NPROCESSORS_CONF);
+
+    long cores = sysconf(_SC_NPROCESSORS_CONF);
+    if (cores > 0)
+    {
+        cpu_core_count = (int)cores;
+    }
 
     running = true;
     return true;
@@ -67,14 +73,16 @@ void sysmonRun()
         if (key == 'q' || key == 'Q')
         {
             sysmonStop();
-            continue;
         }
 
         erase();
 
-        attron(A_BOLD | COLOR_PAIR(1));
-        mvprintw(2, (width / 2) - (strlen(welcome_str) / 2), "%s", welcome_str);
-        attroff(A_BOLD | COLOR_PAIR(1));
+        if (width >= (int)strlen(welcome_str))
+        {
+            attron(A_BOLD | COLOR_PAIR(1));
+            mvprintw(2, (width / 2) - ((int)strlen(welcome_str) / 2), "%s", welcome_str);
+            attroff(A_BOLD | COLOR_PAIR(1));
+        }
 
         // Uptime - /proc/uptime
 
@@ -168,6 +176,8 @@ void sysmonRun()
             continue;
         }
 
+        int per_cpu_start_row = 16;
+
         for (int i = 0; i <= cpu_core_count; i++)
         {
             if (i == 0)
@@ -175,6 +185,7 @@ void sysmonRun()
                 if (cpuGetInfo(proc_file, &cpus_infos[i]) == -1)
                 {
                     fclose(proc_file);
+                    proc_file = NULL;
                     sysmonStop();
                     break;
                 }
@@ -185,19 +196,25 @@ void sysmonRun()
                 attroff(A_BOLD);
 
                 attron(A_BOLD | COLOR_PAIR(1));
-                mvprintw(16, 5, "Per CPU%%:");
+                mvprintw(per_cpu_start_row, 5, "Per CPU%%:");
                 attroff(A_BOLD | COLOR_PAIR(1));
 
                 continue;
             }
 
+            if (per_cpu_start_row + i > height - 1)
+            {
+                break;
+            }
+
             attron(A_BOLD | COLOR_PAIR(2));
-            mvprintw(16 + i, 6, "-> ");
+            mvprintw(per_cpu_start_row + i, 6, "-> ");
             attroff(A_BOLD | COLOR_PAIR(2));
 
             if (cpuGetInfo(proc_file, &cpus_infos[i]) == -1)
             {
                 fclose(proc_file);
+                proc_file = NULL;
                 sysmonStop();
                 break;
             }
@@ -206,6 +223,11 @@ void sysmonRun()
             attron(A_BOLD);
             printw("%5.2lf%%", cpus_infos[i].percentage);
             attroff(A_BOLD);
+        }
+
+        if (proc_file)
+        {
+            fclose(proc_file);
         }
 
         fclose(proc_file);
@@ -221,7 +243,6 @@ void sysmonRun()
 void sysmonStop()
 {
     running = false;
-    sysmonTerminate();
 }
 
 void sysmonTerminate()

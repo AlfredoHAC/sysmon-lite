@@ -48,7 +48,10 @@ int cpuGetInfo(FILE* cpu_proc_file, CpuInfo* cpu_info)
 
     cpu_info->prev = cpu_info->current;
 
-    fgets(line_buffer, sizeof(line_buffer), cpu_proc_file);
+    if (!fgets(line_buffer, sizeof(line_buffer), cpu_proc_file))
+    {
+        return -1;
+    }
     sscanf(line_buffer, "%*[^\x20] %ld %ld %ld %ld %ld %ld %ld %ld", &cpu_info->current.user, &cpu_info->current.nice,
            &cpu_info->current.system, &cpu_info->current.idle, &cpu_info->current.iowait, &cpu_info->current.irq,
            &cpu_info->current.softirq, &cpu_info->current.steal);
