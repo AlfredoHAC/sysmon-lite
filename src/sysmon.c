@@ -39,7 +39,7 @@ bool sysmonInit()
 
     keypad(stdscr, true);
     curs_set(0);
-    nodelay(stdscr, true);
+    timeout(200);
 
     signal(SIGINT, signalHandler);
 
@@ -229,8 +229,6 @@ void sysmonRun()
         {
             fclose(proc_file);
         }
-
-        fclose(proc_file);
 
         attron(COLOR_PAIR(1));
         box(stdscr, 0, 0);

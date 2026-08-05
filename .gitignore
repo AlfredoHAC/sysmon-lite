@@ -10,3 +10,6 @@ bin/
 .vscode/
 *.swp
 *.swo
+
+# Clangd
+.cache/

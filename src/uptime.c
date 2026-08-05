@@ -15,10 +15,7 @@ int uptimeGetInfo(FILE* uptime_proc_file, UptimeInfo* uptime_info)
         return -1;
     }
 
-    if (fscanf(uptime_proc_file, "%d", &uptime_info->seconds) != 1)
-    {
-        return -1;
-    }
+    fscanf(uptime_proc_file, "%d", &uptime_info->seconds);
 
     uptime_info->minutes = (uptime_info->seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE;
     uptime_info->hours = (uptime_info->seconds / SECONDS_PER_HOUR) % HOURS_PER_DAY;
